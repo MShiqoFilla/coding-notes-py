@@ -23,7 +23,7 @@ local_engine = _create_engine(
     user=os.getenv("PG_USER"), password=os.getenv("PG_PASS"), dbname=os.getenv("PG_DBNM"), host=os.getenv("PG_HOST"), port=os.getenv("PG_PORT")
 )
 
-def example_directly_using_geopandas():
+def example_write_directly_using_geopandas():
     data = {
         "id": [1, 2, 3],
         "name": ["Jakarta", "Bandung", "Surabaya"],
@@ -38,7 +38,7 @@ def example_directly_using_geopandas():
     gdf = gpd.GeoDataFrame(data, crs="EPSG:4326")
     gdf.to_postgis(name="example_postgis_table", con=local_engine, if_exists="replace", index=False)
 
-def example_using_pandas_only():
+def example_write_using_pandas_only():
     data = {
         "id": [1, 2, 3],
         "name": ["Jakarta", "Bandung", "Surabaya"],
@@ -55,3 +55,9 @@ def example_using_pandas_only():
     df.to_sql(
         name="example_postgis_table", con=local_engine, if_exists="replace", dtype={"geometry" : Geometry('GEOMETRY', 4326)}, index=False
     )
+
+def example_read_using_geopandas():
+    gdf = gpd.read_postgis(sql="""select * from example_postgis_table""", con=local_engine, geom_col="geometry")
+    print(gdf)
+
+example_read_using_geopandas()
